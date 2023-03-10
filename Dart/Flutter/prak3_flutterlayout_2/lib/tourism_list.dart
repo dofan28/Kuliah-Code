@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:prak3_flutterlayout_2/detail_screen.dart';
+import 'package:prak3_flutterlayout_2/done_tourism_list.dart';
 import 'package:prak3_flutterlayout_2/model/tourism_place.dart';
+import 'package:prak3_flutterlayout_2/list_item.dart';
+import 'package:prak3_flutterlayout_2/detail_screen.dart';
+import 'package:prak3_flutterlayout_2/provider/done_tourism_provider.dart';
 
-class MainScreen extends StatelessWidget {
-  MainScreen({Key? key}) : super(key: key);
+class TourismList extends StatefulWidget {
+  const TourismList({Key? key}) : super(key: key);
 
   @override
-  _MainScreenState creaeState() => _MainScreenState();
+  _TourismListState createState() => _TourismListState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  final List<TourismPlace> doneTourismPlaceList = [];
+class _TourismListState extends State<TourismList> {
   final List<TourismPlace> tourismPlaceList = [
     TourismPlace(
         name: 'Wisata Bahari Lamongan',
@@ -54,25 +56,34 @@ class _MainScreenState extends State<MainScreen> {
         imageAsset: 'assets/images/mb-banner.jpeg')
   ];
 
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Professional Football Team'),
-      ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          final TourismPlace place = tourismPlaceList[index];
-          return InkWell(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return DetailScreen(place: place);
-              }));
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        final TourismPlace place = tourismPlaceList[index];
+        return InkWell(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return DetailScreen(place: place);
+            }));
+          },
+          child: Consumer<DoneTourismProvider>(
+            builder: (context, DoneTourismProvider data, widget) {
+              return ListItem(
+                  place: place,
+                  isDone: DoneTourismProvider,
+                  onCheckboxClick: (bool? value) {
+              setState(() {
+                if (value != null) {
+                  value
+                      ? doneTourismPlaceList.add(place)
+                      : doneTourismPlaceList.remove(place);
+                }
             },
-            child: listItem(place),
-          );
-        },
-        itemCount: tourismPlaceList.length,
-      ),
+          ),
+        );
+      },
+      itemCount: tourismPlaceList.length,
     );
   }
 }
